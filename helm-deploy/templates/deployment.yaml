@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName | lower }}-deployment
+  labels:
+    app.kubernetes.io/name: {{ .Values.appName }}
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.appName }}
+    spec:
+      containers:
+        - name: {{ .Values.container.name | quote }}
+          image: "{{.Values.container.image}}:{{.Values.container.tag}}"
+          ports:
+            - containerPort: {{.Values.container.port | default 8080}}
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ .Values.appName | lower }}-svc
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.appName }}
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: {{.Values.container.port | default 8080}}
+
+---
