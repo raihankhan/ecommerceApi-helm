@@ -33,7 +33,7 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: {{ .Values.appName | lower }}-svc
+  name: {{ .Values.appName | lower }}-nodeport
 spec:
   selector:
     app.kubernetes.io/name: {{ .Values.appName | lower }}
@@ -43,7 +43,54 @@ spec:
   type: NodePort
   ports:
     - protocol: TCP
-      port: {{.Values.service.port | default 8080}}
+      port: {{.Values.service.nodePort | default 8080}}
       targetPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName | lower }}-svc
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.appName | lower }}
+    app.kubernetes.io/created-by: {{ .Values.creator | lower }}
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/version: {{ .Values.version | quote }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: 8080
+
+---
+  {{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.appName }}-ingress
+  labels:
+    app.kubernetes.io/name: {{ .Values.appName | lower }}
+    app.kubernetes.io/created-by: {{ .Values.creator | lower }}
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/version: {{ .Values.version | quote }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  {{- end }}
+spec:
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $.Values.appName | lower }}-svc
+                port:
+                  number: {{ $.Values.service.port }}
+          {{- end }}
+    {{- end }}
 
 ---
