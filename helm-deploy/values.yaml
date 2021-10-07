@@ -1,13 +1,15 @@
 # Default values for helm-deploy.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-replicaCount: 2
+replicaCount: 4
 appName: apiserver
+creator: raihan
+version: 2.3.4
 container:
-  name: ecommerce-api
+  name: ecommerce-container
   image: raihankhanraka/ecommerce-api
   tag: v1.0
-  port: 8080
+
 #image:
 #  repository: nginx
 #  pullPolicy: IfNotPresent
@@ -41,7 +43,7 @@ container:
   # runAsUser: 1000
 
 service:
-  port: 8080
+  port: 8083
 
 #ingress:
 #  enabled: false
