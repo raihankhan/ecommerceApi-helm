@@ -4,24 +4,28 @@ metadata:
   name: {{ .Values.appName | lower }}-deployment
   labels:
     app.kubernetes.io/name: {{ .Values.appName | lower }}
+    app.kubernetes.io/instance: {{ .Values.appName | lower }}-deployment
     app.kubernetes.io/created-by: {{ .Values.creator | lower }}
-    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/version: {{ .Values.version | quote }}
 spec:
   replicas: {{.Values.replicaCount}}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Values.appName | lower }}
+      app.kubernetes.io/instance: {{ .Values.appName | lower }}-deployment
       app.kubernetes.io/created-by: {{ .Values.creator | lower }}
-      app.kubernetes.io/managed-by: helm
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
       app.kubernetes.io/version: {{ .Values.version | quote }}
   template:
     metadata:
       labels:
         app.kubernetes.io/name: {{ .Values.appName | lower }}
+        app.kubernetes.io/instance: {{ .Values.appName | lower }}-deployment
         app.kubernetes.io/created-by: {{ .Values.creator | lower }}
-        app.kubernetes.io/managed-by: helm
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/version: {{ .Values.version | quote }}
+
     spec:
       containers:
         - name: {{ .Values.container.name | quote }}
@@ -37,9 +41,11 @@ metadata:
 spec:
   selector:
     app.kubernetes.io/name: {{ .Values.appName | lower }}
+    app.kubernetes.io/instance: {{ .Values.appName | lower }}-deployment
     app.kubernetes.io/created-by: {{ .Values.creator | lower }}
-    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/version: {{ .Values.version | quote }}
+
   type: NodePort
   ports:
     - protocol: TCP
@@ -54,8 +60,9 @@ metadata:
 spec:
   selector:
     app.kubernetes.io/name: {{ .Values.appName | lower }}
+    app.kubernetes.io/instance: {{ .Values.appName | lower }}-deployment
     app.kubernetes.io/created-by: {{ .Values.creator | lower }}
-    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/version: {{ .Values.version | quote }}
   ports:
     - protocol: TCP
@@ -70,12 +77,12 @@ metadata:
   name: {{ .Values.appName }}-ingress
   labels:
     app.kubernetes.io/name: {{ .Values.appName | lower }}
+    app.kubernetes.io/instance: {{ .Values.appName | lower }}-deployment
     app.kubernetes.io/created-by: {{ .Values.creator | lower }}
-    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/version: {{ .Values.version | quote }}
   annotations:
     kubernetes.io/ingress.class: nginx
-  {{- end }}
 spec:
   rules:
     {{- range .Values.ingress.hosts }}
@@ -92,5 +99,5 @@ spec:
                   number: {{ $.Values.service.port }}
           {{- end }}
     {{- end }}
-
+  {{- end }}
 ---
