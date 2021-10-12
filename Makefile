@@ -12,5 +12,14 @@ helm_deploy:
 	@helm install apiserver-helm ./helm-deploy -n ingress-nginx
 	@kubectl wait --namespace ingress-nginx --for=condition=ready pod -l app.kubernetes.io/instance=apiserver-deployment --timeout=800s
 	@echo "Server ready for requests"
+del_deployments:
+	@kubectl delete deployments --all -n ingress-nginx
+del_pods:
+	@kubectl delete pods --all -n ingress-nginx
+del_services:
+	@kubectl delete services --all -n ingress-nginx
+del_jobs:
+	@kubectl delete jobs --all -n ingress-nginx
+delete_all: del_deployments del_services del_jobs
 
 run: create_cluster create_controller helm_deploy
