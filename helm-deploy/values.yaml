@@ -4,11 +4,11 @@
 replicaCount: 2
 appName: apiserver
 creator: raihan
-version: 2.3.4
+version: 1.0.0
 container:
   name: ecommerce-container
   image: raihankhanraka/ecommerce-api
-  tag: v1.0
+  tag: v1.1
 
 service:
   port: 8084
